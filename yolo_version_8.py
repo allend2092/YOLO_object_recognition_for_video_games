@@ -1,13 +1,11 @@
 import cv2
-import torch
 import numpy as np
 from PIL import ImageGrab
 from screeninfo import get_monitors
-
-# Load YOLOv8 model
 from ultralytics import YOLO
 
-model = YOLO('yolov8n.pt')  # You can choose 'yolov8n.pt' or any other model variant
+# Load YOLOv8 model
+model = YOLO('yolov8x.pt')  # Ensure the 'yolov8x.pt' file is in the same directory as this script
 
 def capture_screen(region=None):
     screenshot = ImageGrab.grab(bbox=region)
@@ -38,12 +36,13 @@ def main():
 
             for result in results:
                 if result.boxes is not None and len(result.boxes) > 0:
-                    x1, y1, x2, y2 = map(int, result.boxes.xyxy[0])
-                    conf = result.boxes.conf[0]
-                    cls = int(result.boxes.cls[0])
-                    label = f'{model.names[cls]} {conf:.2f}'
-                    cv2.rectangle(screenshot, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                    cv2.putText(screenshot, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+                    for box in result.boxes:
+                        x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
+                        conf = box.conf[0].item()
+                        cls = int(box.cls[0].item())
+                        label = f'{model.names[cls]} {conf:.2f}'
+                        cv2.rectangle(screenshot, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                        cv2.putText(screenshot, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
             cv2.imshow('YOLOv8 Object Detection', screenshot)
 
