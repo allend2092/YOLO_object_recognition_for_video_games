@@ -4,7 +4,7 @@ import numpy as np
 from PIL import ImageGrab
 
 # Load YOLOv5 model
-model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
+model = torch.hub.load('ultralytics/yolov5', 'yolov5x', pretrained=True)
 
 def capture_screen(region=None):
     screenshot = ImageGrab.grab(bbox=region)
